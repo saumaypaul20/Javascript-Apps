@@ -1,120 +1,96 @@
-//Open up the console first to view the questions of the QUIZ.
+//Open up the Chrome Developer Console first to view the questions of the QUIZ.
 
-//Using IIFE
+//IIFE to make our code private
 (function(){
-	//Defining a Constructor with arguments- Question, Options and Correct Answer
-    function QuestionSet(question, answers, correct) {
+    function QuestionSet(question, options, answer){
     this.question = question;
-    this.answers = answers;
-    this.correct = correct;
+    this.options = options;
+    this.answer = answer;
+}
+ 
+//Diplay the Question with Options
+QuestionSet.prototype.DisplayQuestions = function(){
+    console.log(this.question);
+    
+    for(var i = 0; i< this.options.length; i++){
+        console.log(i + ': ' + this.options[i]);
+    }  
+}
+
+
+//checks the answer
+QuestionSet.prototype.CheckAnswer = function(ans, call){
+    var scorenow;
+    if(ans === this.answer){
+        console.log('-------------------------------');
+        console.log('Correct Answer!');
+        console.log('-------------------------------');
+        scorenow = call(true);
     }
-	//displayoing Questions with Options
-    QuestionSet.prototype.displayQuestion = function() {
-
-        console.log(this.question);
-
-         for (var i = 0; i < this.answers.length; i++) {
-                console.log(i + ': ' + this.answers[i]);
-            }   
-
+    else{
+        console.log('-------------------------------');
+        console.log('Oops! Wrong Answer... Try Again');
+        console.log('-------------------------------'); 
+        scorenow = call(false);        
     }
+    DisplayScore(scorenow);
+}
+
+function DisplayScore(now){
+    console.log('-------------------------------');
+    console.log('Current Score: ' + now);
+    console.log('-------------------------------');
+}
 	
-	//displaying Options for answers
-    QuestionSet.prototype.checkAnswer = function(ans, scorenow){
-        var sc;
-        if(ans === this.correct){
-            console.log('Correct!');
-            sc = scorenow(true);
-            
+function Score(){
+    var sc = 0;
+    return function(correct){
+        if(correct){
+            sc++;
         }
-        else{
-            console.log('Try Again!');
-            sc = scorenow(false); 
-            
-        }
+        return sc;
+    }
+}
+
+var KeepScore = Score();
+
+//Picks a random Question
+
+function nextRandomQuestion(){
+    
+    //set of questions
+var q1 = new QuestionSet('Where is Assam Located?',
+                        ['India', 'China', 'Bangladesh'],
+                        0);
+var q2 = new QuestionSet('Who is the current President of USA?',
+                        ['Obama', 'Bill Clinton', 'Donald Trump'],
+                        2);
+var q3 = new QuestionSet('Elun Musk is a/an :', 
+                        ['Dancer', 'Athlete', 'Entrepreneur'],
+                        2);
+    
+//storing the questions in an array
+var questions = [q1,q2,q3];
+    
+//chooisng a random question
+var n = Math.floor(Math.random(questions)*questions.length);
+
+questions[n].DisplayQuestions(); //Displays Questions
+
+var answer = prompt('Please give your Answer'); //promts user to input the correct option
+//Quits the game if user types 'exit'
+if(answer === 'exit'){
+    
+        console.log('---------------------------------');
+        console.log('Refresh the page to Play the Quiz'); 
+        console.log('---------------------------------');     
+    }
+    else{
         
-        this.displayScore(sc);
+        questions[n].CheckAnswer(parseInt(answer), KeepScore); // Displays Correct Answer
+        nextRandomQuestion();
     }
-    //displaying Scores
-    QuestionSet.prototype.displayScore = function(sc){
-            console.log('------------------------------');
-            console.log('Your current score is: ' + sc);
-            console.log('------------------------------');
-    }
-    
-	
-	
-	//Inputting Questions
-    var q1 = new QuestionSet('Is JavaScript the coolest programming language in the world?',
-                              ['Yes', 'No'],
-                              0);
+}
 
-    var q2 = new QuestionSet('Where is Assam located?',
-                              ['China', 'India', 'Myanmar'],
-                              1);
-	var q3 = new QuestionSet('What is the opposite of Happy?',
-                              ['Bad', 'Popular', 'Sad'],
-                              2);						  
-
-
-    var questions= [q1,q2,q3]; //storing all the Questions in an array
-
-    //couting the Scores for Correct Answers
-    function score(){
-        var sc = 0;
-        return function(correct){
-                if(correct){
-                    sc++;
-                }
-            return sc;
-        }
-    }
-	
-    var keepScore = score(); //storing the Score in a varaible
-    
-	//Main process that calls displayQuestion to display a Question randomly and checks the Answer and continues if the ANSWER IS NOT 'exit'.
-	//The user can quit the game by typing 'exit' in the answer box.
-    function process(){
-
-    var n = Math.floor(Math.random(questions)* questions.length);
-
-    questions[n].displayQuestion();
-
-    var answers = prompt('Please select the correct answer.');
-	//if Answer is NOT 'exit' then call teh checkAnswer function 
-    if (answers !== 'exit') {
-        questions[n].checkAnswer(parseInt(answers), keepScore);
-        process();
-        
-        }
-    
-    }
-	// Calling rhe process function 
-    process(); 
-
-    }
-)();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+nextRandomQuestion();   
+})();
